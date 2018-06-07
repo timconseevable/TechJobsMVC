@@ -1,6 +1,4 @@
-﻿<h1>@ViewBag.title</h1>
-
-<form action="/Search/Results">
+﻿<form action="/Search/Results">
     <h2>Search by:</h2>
 
     <p>
@@ -10,8 +8,8 @@
                 <input type="radio"
                        name="searchType"
                        id="@column.Key"
-                       value="@column.Key" 
-                       checked="@column.Key == 'all''"/>
+                       value="@column.Key"
+                       checked="@column.Key == 'employer'" />
                 <label for="@column.Key">@column.Value</label>
             </span>
         }
@@ -20,17 +18,38 @@
     <p>
         <label for="searchTerm">Keyword:</label>
         <input type="text" name="searchTerm" id="searchTerm" />
+        @if (string.IsNullOrEmpty(ViewBag.error) == false)
+        {
+        <span class="alert alert-danger"><small class="text-muted"><strong>@ViewBag.error</strong></small> </span>
+        }
     </p>
-
+        
     <input type="submit" value="Search" />
 </form>
 
 <hr />
 
+<h1>@ViewBag.title</h1>
+
 @if (ViewBag.jobs != null)
 {
-
-    <h3>@ViewBag.jobs.Count Result(s)</h3>
-
-    // TODO #2 - Loop over jobs dictionary and display all job fields 
+    <h3>@ViewBag.jobs.Count @( ViewBag.jobs.Count != 1 ? "Results" : "Result" ) </h3>
+    // TODO #2 - Loop over jobs dictionary and display all job fields
+    {
+                    @foreach (Dictionary<string, string> job in ViewBag.jobs)
+        {
+            <table class="job-listing">
+                @foreach (KeyValuePair<string, string> item in job)
+            {
+                    <tr>
+                        <th> <small>@System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(item.Key):</small> </th>
+                        <td>
+                            @if (item.Key == "name") { <h2>@item.Value</h2> }
+                            else { <a asp-controller="List" asp-action="Jobs" asp-route-column="@item.Key" asp-route-value="@item.Value">@item.Value</a>}
+                        </td>
+                    </tr>
+                }
+            </table><br />
+        }
+    }
 }
